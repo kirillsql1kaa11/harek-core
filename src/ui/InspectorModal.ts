@@ -3,7 +3,7 @@ import { Logger } from '../kernel/Logger.js';
 
 export class InspectorModal {
   readonly element: HTMLElement;
-  private currentTab = 'logs';
+  private currentTab = 'plugins';
 
   constructor(private kernel: Kernel) {
     this.element = this.createDOM();
@@ -22,7 +22,7 @@ export class InspectorModal {
 
     const title = document.createElement('h2');
     title.className = 'harek-modal-title';
-    title.textContent = 'Инспектор микроядра Harek';
+    title.textContent = 'Управление ядром и модулями';
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'harek-modal-close';
@@ -36,11 +36,11 @@ export class InspectorModal {
     nav.className = 'harek-inspector-nav';
 
     const tabs = [
+      { id: 'plugins', label: 'Установленные модули' },
       { id: 'logs', label: 'Журнал логов' },
       { id: 'services', label: 'Сервисы ядра' },
-      { id: 'hooks', label: 'Хуки и перехваты' },
-      { id: 'events', label: 'События шины' },
-      { id: 'plugins', label: 'Активные модули' }
+      { id: 'hooks', label: 'Хуки' },
+      { id: 'events', label: 'События шины' }
     ];
 
     for (const tab of tabs) {
@@ -79,6 +79,24 @@ export class InspectorModal {
         this.renderTabContent();
       }
     });
+
+    this.kernel.events.on('plugin:installed', () => {
+      if (!this.element.classList.contains('is-hidden') && this.currentTab === 'plugins') {
+        this.renderTabContent();
+      }
+    });
+
+    this.kernel.events.on('plugin:uninstalled', () => {
+      if (!this.element.classList.contains('is-hidden') && this.currentTab === 'plugins') {
+        this.renderTabContent();
+      }
+    });
+
+    this.kernel.events.on('plugin:state-changed', () => {
+      if (!this.element.classList.contains('is-hidden') && this.currentTab === 'plugins') {
+        this.renderTabContent();
+      }
+    });
   }
 
   open(): void {
@@ -95,7 +113,60 @@ export class InspectorModal {
     if (!container) return;
     container.innerHTML = '';
 
-    if (this.currentTab === 'logs') {
+    if (this.currentTab === 'plugins') {
+      const plugins = this.kernel.installedPlugins;
+      if (plugins.length === 0) {
+        container.innerHTML = '<div class="empty-state">Нет установленных модулей</div>';
+        return;
+      }
+
+      const list = document.createElement('div');
+      list.className = 'harek-plugin-manager-list';
+
+      for (const p of plugins) {
+        const isEnabled = this.kernel.plugins.isPluginEnabled(p.id);
+        const card = document.createElement('div');
+        card.className = `harek-plugin-manager-card ${isEnabled ? 'is-enabled' : 'is-disabled'}`;
+
+        card.innerHTML = `
+          <div class="plugin-mgr-info">
+            <div class="plugin-mgr-header">
+              <span class="plugin-mgr-title">${p.name}</span>
+              <span class="plugin-mgr-version">v${p.version}</span>
+              <span class="badge-type">${p.type}</span>
+              <span class="plugin-status-badge ${isEnabled ? 'status-on' : 'status-off'}">
+                ${isEnabled ? 'Активен' : 'Отключен'}
+              </span>
+            </div>
+            <div class="plugin-mgr-id"><code>${p.id}</code></div>
+            <div class="plugin-mgr-desc">${p.description || 'Модуль расширения Harek'}</div>
+          </div>
+          <div class="plugin-mgr-actions">
+            <button class="harek-btn ${isEnabled ? 'harek-btn-secondary' : 'harek-btn-primary'} toggle-btn" data-id="${p.id}">
+              ${isEnabled ? 'Отключить' : 'Включить'}
+            </button>
+            <button class="harek-btn harek-btn-danger delete-btn" data-id="${p.id}">
+              Удалить
+            </button>
+          </div>
+        `;
+
+        const toggleBtn = card.querySelector('.toggle-btn') as HTMLButtonElement;
+        toggleBtn.addEventListener('click', async () => {
+          await this.kernel.plugins.togglePlugin(p.id);
+          this.renderTabContent();
+        });
+
+        const deleteBtn = card.querySelector('.delete-btn') as HTMLButtonElement;
+        deleteBtn.addEventListener('click', async () => {
+          await this.kernel.plugins.uninstallPlugin(p.id);
+          this.renderTabContent();
+        });
+
+        list.appendChild(card);
+      }
+      container.appendChild(list);
+    } else if (this.currentTab === 'logs') {
       const logs = Logger.getHistory();
       const list = document.createElement('div');
       list.className = 'harek-log-list';
@@ -123,8 +194,8 @@ export class InspectorModal {
       table.innerHTML = `
         <thead>
           <tr>
-            <th>Идентификатор сервиса</th>
-            <th>Тип реализации</th>
+            <th>Сервис</th>
+            <th>Тип</th>
             <th>Статус</th>
           </tr>
         </thead>
@@ -133,7 +204,7 @@ export class InspectorModal {
             <tr>
               <td><code>${String(k)}</code></td>
               <td>${typeof this.kernel.services.get(k)}</td>
-              <td><span class="badge-success">Зарегистрирован</span></td>
+              <td><span class="badge-success">Активен</span></td>
             </tr>
           `).join('')}
         </tbody>
@@ -146,8 +217,8 @@ export class InspectorModal {
       table.innerHTML = `
         <thead>
           <tr>
-            <th>Имя точки перехвата</th>
-            <th>Количество слушателей</th>
+            <th>Точка перехвата</th>
+            <th>Слушатели</th>
           </tr>
         </thead>
         <tbody>
@@ -178,33 +249,6 @@ export class InspectorModal {
               <td>${new Date(e.timestamp).toLocaleTimeString()}</td>
               <td><code>${e.event}</code></td>
               <td><pre>${this.escape(JSON.stringify(e.payload, null, 2))}</pre></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      `;
-      container.appendChild(table);
-    } else if (this.currentTab === 'plugins') {
-      const plugins = this.kernel.installedPlugins;
-      const table = document.createElement('table');
-      table.className = 'harek-inspector-table';
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>ID плагина</th>
-            <th>Название</th>
-            <th>Версия</th>
-            <th>Тип</th>
-            <th>Разрешения</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${plugins.map((p) => `
-            <tr>
-              <td><code>${p.id}</code></td>
-              <td>${p.name}</td>
-              <td>${p.version}</td>
-              <td><span class="badge-type">${p.type}</span></td>
-              <td>${p.permissions ? p.permissions.join(', ') : 'Нет'}</td>
             </tr>
           `).join('')}
         </tbody>

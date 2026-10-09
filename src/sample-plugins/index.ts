@@ -1,9 +1,7 @@
 import {
   PluginManifest,
   IWidgetPlugin,
-  ICoreExtension,
   IWidgetContext,
-  IKernelControl,
   HarekPlugin
 } from 'harek-sdk';
 
@@ -24,7 +22,7 @@ class ClockWidgetPlugin implements IWidgetPlugin {
       <div class="clock-widget-ui">
         <div class="clock-time-display" id="clock-time">00:00:00</div>
         <div class="clock-date-display" id="clock-date">Загрузка...</div>
-        <div class="clock-uptime" id="clock-uptime">Аптайм ядра: 0 сек</div>
+        <div class="clock-uptime" id="clock-uptime">Аптайм: 0 сек</div>
       </div>
     `;
 
@@ -39,15 +37,15 @@ class ClockWidgetPlugin implements IWidgetPlugin {
       }
       if (dateEl) {
         dateEl.textContent = now.toLocaleDateString('ru-RU', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
         });
       }
       if (this.uptimeEl) {
         const uptimeSeconds = Math.floor((Date.now() - this.startTime) / 1000);
-        this.uptimeEl.textContent = `Аптайм виджета: ${uptimeSeconds} сек`;
+        this.uptimeEl.textContent = `Аптайм: ${uptimeSeconds} сек`;
       }
       if (this.context) {
         this.context.events.emit('clock:tick', { timestamp: now.getTime() });
@@ -68,18 +66,18 @@ class ClockWidgetPlugin implements IWidgetPlugin {
 
 const clockManifest: PluginManifest = {
   id: 'com.harek.demo.clock',
-  name: 'Системные часы и время',
+  name: 'Системное время',
   version: '1.0.0',
-  author: 'Harek Core Team',
-  description: 'Отображает текущее время, дату и аптайм, отправляя ежесекундные события в шину ядра.',
+  author: 'Harek Team',
+  description: 'Минималистичный таймер реального времени с отправкой событий тика в шину ядра.',
   type: 'board-widget',
   entry: 'ClockWidget.js',
   permissions: ['storage:local'],
   defaultSize: {
-    width: 320,
-    height: 180,
-    minWidth: 260,
-    minHeight: 150
+    width: 280,
+    height: 160,
+    minWidth: 240,
+    minHeight: 130
   }
 };
 
@@ -98,7 +96,7 @@ class EventBusMonitorPlugin implements IWidgetPlugin {
     container.innerHTML = `
       <div class="event-monitor-ui">
         <div class="event-monitor-header">
-          <span>События в реальном времени:</span>
+          <span>События шины</span>
           <span class="event-counter" id="ev-counter">0 событий</span>
         </div>
         <div class="event-monitor-list" id="ev-list"></div>
@@ -124,7 +122,7 @@ class EventBusMonitorPlugin implements IWidgetPlugin {
     `;
     this.listEl.prepend(row);
 
-    if (this.listEl.children.length > 25) {
+    if (this.listEl.children.length > 20) {
       this.listEl.removeChild(this.listEl.lastChild!);
     }
   }
@@ -141,66 +139,16 @@ const busMonitorManifest: PluginManifest = {
   id: 'com.harek.demo.bus-monitor',
   name: 'Монитор шины событий',
   version: '1.0.0',
-  author: 'Harek Core Team',
-  description: 'Интерактивный виджет для отслеживания трафика событий между плагинами и ядром в реальном времени.',
+  author: 'Harek Team',
+  description: 'Лаконичный монитор трафика событий шины ядра.',
   type: 'board-widget',
   entry: 'EventBusMonitor.js',
   defaultSize: {
-    width: 360,
-    height: 240,
-    minWidth: 300,
-    minHeight: 200
+    width: 320,
+    height: 220,
+    minWidth: 280,
+    minHeight: 180
   }
-};
-
-class NeonThemeExtension implements ICoreExtension {
-  private styleEl: HTMLStyleElement | null = null;
-
-  async onKernelBoot(kernel: IKernelControl): Promise<void> {
-    kernel.logger.info('Активация системного расширения неоновой темы ядра...');
-
-    this.styleEl = document.createElement('style');
-    this.styleEl.id = 'harek-neon-theme';
-    this.styleEl.textContent = `
-      :root {
-        --harek-accent-color: #00ffcc !important;
-        --harek-glow: 0 0 20px rgba(0, 255, 204, 0.4) !important;
-        --harek-card-border: 1px solid rgba(0, 255, 204, 0.3) !important;
-      }
-      .harek-widget-card {
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 255, 204, 0.15) !important;
-      }
-      .harek-toolbar-logo {
-        text-shadow: 0 0 12px #00ffcc !important;
-      }
-    `;
-    document.head.appendChild(this.styleEl);
-
-    kernel.slots.registerSlotItem('slot:toolbar', 'neon-indicator', () => {
-      const tag = document.createElement('span');
-      tag.className = 'neon-theme-badge';
-      tag.textContent = 'НЕОН МОД';
-      return tag;
-    });
-  }
-
-  async onKernelShutdown(): Promise<void> {
-    if (this.styleEl) {
-      this.styleEl.remove();
-      this.styleEl = null;
-    }
-  }
-}
-
-const neonThemeManifest: PluginManifest = {
-  id: 'com.harek.demo.neon-theme',
-  name: 'Неоновая тема ядра',
-  version: '1.0.0',
-  author: 'Harek Core Team',
-  description: 'Системное расширение ядра (core-extension), модифицирующее стили, слоты и палитру всей платформы.',
-  type: 'core-extension',
-  entry: 'NeonTheme.js',
-  permissions: ['kernel:internal']
 };
 
 export interface SamplePluginItem {
@@ -210,6 +158,5 @@ export interface SamplePluginItem {
 
 export const samplePlugins: SamplePluginItem[] = [
   { manifest: clockManifest, factory: () => new ClockWidgetPlugin() },
-  { manifest: busMonitorManifest, factory: () => new EventBusMonitorPlugin() },
-  { manifest: neonThemeManifest, factory: () => new NeonThemeExtension() }
+  { manifest: busMonitorManifest, factory: () => new EventBusMonitorPlugin() }
 ];

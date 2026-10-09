@@ -9,3 +9,4 @@ launcher/obj/
 .DS_Store
 .vscode/
 .idea/
+plugins/

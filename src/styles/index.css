@@ -1,21 +1,21 @@
 :root {
-  --harek-bg-base: #090a0f;
-  --harek-bg-card: rgba(18, 20, 29, 0.75);
-  --harek-bg-elevated: #161824;
-  --harek-border: rgba(255, 255, 255, 0.08);
-  --harek-border-focus: rgba(99, 102, 241, 0.4);
-  --harek-card-border: 1px solid rgba(255, 255, 255, 0.08);
-  --harek-text-primary: #f1f5f9;
-  --harek-text-secondary: #94a3b8;
-  --harek-text-muted: #64748b;
-  --harek-accent-color: #6366f1;
-  --harek-accent-hover: #4f46e5;
-  --harek-success: #10b981;
-  --harek-warning: #f59e0b;
-  --harek-danger: #ef4444;
-  --harek-glow: 0 0 25px rgba(99, 102, 241, 0.25);
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --bg-app: #0c0d10;
+  --bg-surface: #121318;
+  --bg-elevated: #181920;
+  --bg-subtle: #1e2029;
+  --border-subtle: #1e2029;
+  --border-focus: #323544;
+  --text-main: #e2e8f0;
+  --text-muted: #71788e;
+  --text-dim: #474c5d;
+  --accent-base: #3b82f6;
+  --accent-hover: #2563eb;
+  --status-active: #22c55e;
+  --status-inactive: #64748b;
+  --danger-base: #ef4444;
+  --danger-hover: #dc2626;
+  --font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
 }
 
 * {
@@ -25,9 +25,9 @@
 }
 
 body {
-  background-color: var(--harek-bg-base);
-  color: var(--harek-text-primary);
-  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-ui);
   height: 100vh;
   width: 100vw;
   overflow: hidden;
@@ -43,14 +43,13 @@ body {
 }
 
 .harek-toolbar {
-  height: 56px;
-  background: rgba(13, 15, 22, 0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: var(--harek-card-border);
+  height: 52px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 18px;
   z-index: 100;
 }
 
@@ -61,67 +60,56 @@ body {
 }
 
 .harek-toolbar-logo {
-  font-weight: 700;
-  font-size: 1.15rem;
-  letter-spacing: 2px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #ffffff 0%, var(--harek-accent-color) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+  color: var(--text-main);
 }
 
 .harek-toolbar-core-tag {
   font-size: 0.7rem;
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 2px 8px;
+  font-family: var(--font-code);
+  background: var(--bg-elevated);
+  padding: 2px 6px;
   border-radius: 4px;
-  color: var(--harek-text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
 }
 
 .harek-toolbar-status-pill {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  padding: 3px 10px;
-  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  padding: 3px 8px;
+  border-radius: 6px;
   font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--harek-success);
+  font-weight: 500;
+  color: var(--status-active);
 }
 
 .status-indicator {
-  width: 7px;
-  height: 7px;
-  background-color: var(--harek-success);
+  width: 6px;
+  height: 6px;
+  background-color: var(--status-active);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--harek-success);
-  animation: pulse-dot 2s infinite ease-in-out;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
 }
 
 .harek-toolbar-stats {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .stat-chip {
   font-size: 0.75rem;
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 4px 10px;
-  border-radius: 6px;
-  color: var(--harek-text-secondary);
+  font-family: var(--font-code);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: var(--text-muted);
 }
 
 .harek-toolbar-actions {
@@ -131,71 +119,78 @@ body {
 }
 
 .harek-btn {
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
   font-size: 0.8rem;
   font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 6px;
+  padding: 5px 12px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  border: 1px solid transparent;
 }
 
 .harek-btn-primary {
-  background: var(--harek-accent-color);
+  background: var(--accent-base);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
 }
 
 .harek-btn-primary:hover {
-  background: var(--harek-accent-hover);
-  transform: translateY(-1px);
+  background: var(--accent-hover);
 }
 
 .harek-btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--harek-text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-elevated);
+  color: var(--text-main);
+  border-color: var(--border-subtle);
 }
 
 .harek-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-subtle);
+  border-color: var(--border-focus);
 }
 
 .harek-btn-outline {
   background: transparent;
-  color: var(--harek-text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
 }
 
 .harek-btn-outline:hover {
-  color: var(--harek-danger);
-  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--danger-base);
+  border-color: var(--danger-base);
+}
+
+.harek-btn-danger {
+  background: transparent;
+  color: var(--danger-base);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.harek-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--danger-base);
 }
 
 .harek-board-canvas {
   flex: 1;
   position: relative;
-  background-color: var(--harek-bg-base);
+  background-color: var(--bg-app);
   background-image:
-    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
     radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px, 16px 16px;
-  background-position: 0 0, 16px 16px;
+  background-size: 24px 24px;
   overflow: hidden;
 }
 
 .harek-drop-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(9, 10, 15, 0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(12, 13, 16, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.2s ease;
   z-index: 999;
 }
 
@@ -208,83 +203,83 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 40px;
-  border: 2px dashed var(--harek-accent-color);
-  border-radius: 16px;
-  background: rgba(18, 20, 29, 0.6);
-  box-shadow: 0 0 50px rgba(99, 102, 241, 0.2);
+  gap: 12px;
+  padding: 36px 48px;
+  border: 1px dashed var(--border-focus);
+  border-radius: 8px;
+  background: var(--bg-surface);
 }
 
 .harek-drop-icon-ring {
-  width: 60px;
-  height: 60px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 3px solid var(--harek-accent-color);
-  box-shadow: 0 0 20px var(--harek-accent-color);
+  border: 2px solid var(--accent-base);
 }
 
 .harek-drop-content h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 .harek-drop-content p {
-  color: var(--harek-text-secondary);
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
 .harek-widget-card {
   position: absolute;
   top: 0;
   left: 0;
-  background: var(--harek-bg-card);
-  backdrop-filter: blur(20px);
-  border: var(--harek-card-border);
-  border-radius: 12px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), var(--harek-glow);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: border-color 0.15s ease;
+}
+
+.harek-widget-card:hover {
+  border-color: var(--border-focus);
 }
 
 .harek-widget-card.is-dragging {
-  opacity: 0.92;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.4);
+  opacity: 0.95;
+  border-color: var(--accent-base);
   cursor: grabbing;
 }
 
 .harek-widget-header {
-  height: 38px;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  height: 36px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 10px;
   cursor: grab;
 }
 
 .harek-widget-title-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .harek-widget-status-dot {
-  width: 6px;
-  height: 6px;
-  background-color: var(--harek-accent-color);
+  width: 5px;
+  height: 5px;
+  background-color: var(--status-active);
   border-radius: 50%;
-  box-shadow: 0 0 6px var(--harek-accent-color);
 }
 
 .harek-widget-title {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--harek-text-primary);
-  max-width: 180px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-main);
+  max-width: 170px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -292,46 +287,46 @@ body {
 
 .harek-widget-badge {
   font-size: 0.65rem;
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1px 6px;
-  border-radius: 4px;
-  color: var(--harek-text-muted);
+  font-family: var(--font-code);
+  color: var(--text-dim);
 }
 
 .harek-widget-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .harek-widget-btn {
   background: transparent;
   border: none;
-  color: var(--harek-text-muted);
-  width: 22px;
-  height: 22px;
+  color: var(--text-muted);
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .harek-widget-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--harek-text-primary);
+  background: var(--bg-subtle);
+  color: var(--text-main);
+}
+
+.harek-widget-power-btn:hover {
+  color: var(--accent-base);
 }
 
 .harek-widget-close-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: var(--harek-danger);
+  color: var(--danger-base);
 }
 
 .harek-widget-body {
   flex: 1;
-  padding: 14px;
+  padding: 12px;
   overflow: auto;
   position: relative;
 }
@@ -345,16 +340,15 @@ body {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   cursor: se-resize;
-  background: linear-gradient(135deg, transparent 50%, var(--harek-text-muted) 50%);
-  opacity: 0.4;
-  transition: opacity 0.2s;
+  background: linear-gradient(135deg, transparent 50%, var(--text-dim) 50%);
+  opacity: 0.3;
 }
 
 .harek-widget-resize-handle:hover {
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .clock-widget-ui {
@@ -363,53 +357,48 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  text-align: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .clock-time-display {
-  font-size: 2.2rem;
-  font-weight: 700;
-  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 600;
+  font-family: var(--font-code);
   letter-spacing: 1px;
-  color: #ffffff;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  color: var(--text-main);
 }
 
 .clock-date-display {
-  font-size: 0.85rem;
-  color: var(--harek-text-secondary);
-  text-transform: capitalize;
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .clock-uptime {
-  font-size: 0.72rem;
-  font-family: var(--font-mono);
-  color: var(--harek-text-muted);
-  margin-top: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-code);
+  color: var(--text-dim);
 }
 
 .event-monitor-ui {
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 8px;
+  gap: 6px;
 }
 
 .event-monitor-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.78rem;
-  color: var(--harek-text-secondary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 4px;
 }
 
 .event-counter {
-  font-family: var(--font-mono);
-  color: var(--harek-accent-color);
-  font-weight: 600;
+  font-family: var(--font-code);
+  color: var(--text-main);
 }
 
 .event-monitor-list {
@@ -417,212 +406,267 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .event-monitor-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 4px;
-  font-size: 0.74rem;
+  padding: 3px 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  font-size: 0.72rem;
 }
 
 .ev-time {
-  color: var(--harek-text-muted);
-  font-family: var(--font-mono);
+  color: var(--text-dim);
+  font-family: var(--font-code);
 }
 
 .ev-name code {
-  color: var(--harek-success);
-  font-family: var(--font-mono);
-}
-
-.neon-theme-badge {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #00ffcc;
-  border: 1px solid #00ffcc;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-shadow: 0 0 8px #00ffcc;
+  color: var(--accent-base);
+  font-family: var(--font-code);
 }
 
 .harek-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  opacity: 1;
-  transition: opacity 0.2s ease;
 }
 
 .harek-modal-backdrop.is-hidden {
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .harek-modal {
-  width: 760px;
+  width: 720px;
   max-width: 90vw;
   max-height: 85vh;
-  background: #11131c;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.15);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-focus);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .harek-modal-header {
-  height: 52px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  height: 48px;
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 16px;
 }
 
 .harek-modal-title {
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .harek-modal-close {
   background: transparent;
   border: none;
-  color: var(--harek-text-muted);
-  font-size: 1.4rem;
+  color: var(--text-muted);
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
 .harek-modal-close:hover {
-  color: var(--harek-text-primary);
+  color: var(--text-main);
 }
 
 .harek-inspector-nav {
   display: flex;
-  gap: 4px;
-  padding: 10px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(0, 0, 0, 0.2);
+  gap: 2px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-app);
 }
 
 .harek-inspector-tab-btn {
   background: transparent;
   border: none;
-  color: var(--harek-text-muted);
-  font-family: var(--font-sans);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
   font-size: 0.8rem;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 5px 10px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.15s;
 }
 
 .harek-inspector-tab-btn.is-active {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: var(--bg-elevated);
+  color: var(--text-main);
 }
 
 .harek-inspector-content {
   flex: 1;
-  padding: 20px;
+  padding: 16px;
   overflow-y: auto;
-  min-height: 380px;
+  min-height: 360px;
+}
+
+.harek-plugin-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.harek-plugin-manager-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  transition: opacity 0.15s;
+}
+
+.harek-plugin-manager-card.is-disabled {
+  opacity: 0.55;
+}
+
+.plugin-mgr-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plugin-mgr-title {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.plugin-mgr-version {
+  font-size: 0.7rem;
+  font-family: var(--font-code);
+  color: var(--text-dim);
+}
+
+.plugin-status-badge {
+  font-size: 0.68rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--font-code);
+}
+
+.status-on {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--status-active);
+}
+
+.status-off {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--status-inactive);
+}
+
+.plugin-mgr-id {
+  margin-top: 2px;
+}
+
+.plugin-mgr-id code {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: var(--font-code);
+}
+
+.plugin-mgr-desc {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.plugin-mgr-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .harek-log-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
+  gap: 4px;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
 }
 
 .harek-log-item {
   display: flex;
-  gap: 10px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.02);
-  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
 }
 
-.log-time { color: var(--harek-text-muted); }
-.log-scope { color: var(--harek-accent-color); font-weight: 600; }
-.log-info .log-level { color: var(--harek-success); }
-.log-warn .log-level { color: var(--harek-warning); }
-.log-error .log-level { color: var(--harek-danger); }
-.log-msg { color: var(--harek-text-primary); }
+.log-time { color: var(--text-dim); }
+.log-scope { color: var(--accent-base); }
+.log-info .log-level { color: var(--status-active); }
+.log-warn .log-level { color: #f59e0b; }
+.log-error .log-level { color: var(--danger-base); }
+.log-msg { color: var(--text-main); }
 
 .harek-inspector-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
 .harek-inspector-table th {
   text-align: left;
-  padding: 8px 12px;
-  color: var(--harek-text-muted);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 10px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .harek-inspector-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .badge-success {
-  color: var(--harek-success);
-  background: rgba(16, 185, 129, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.72rem;
+  color: var(--status-active);
+  font-size: 0.7rem;
 }
 
 .badge-type {
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: 4px;
+  font-size: 0.68rem;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 
-.badge-widget {
-  background: rgba(99, 102, 241, 0.15);
-  color: var(--harek-accent-color);
-}
-
-.badge-extension {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--harek-warning);
+.empty-state {
+  text-align: center;
+  padding: 32px 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
 .harek-catalog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  padding: 16px;
   overflow-y: auto;
 }
 
 .harek-catalog-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .catalog-card-header {
@@ -633,18 +677,18 @@ body {
 
 .catalog-version {
   font-size: 0.7rem;
-  font-family: var(--font-mono);
-  color: var(--harek-text-muted);
+  font-family: var(--font-code);
+  color: var(--text-dim);
 }
 
 .catalog-card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .catalog-card-desc {
-  font-size: 0.8rem;
-  color: var(--harek-text-secondary);
+  font-size: 0.78rem;
+  color: var(--text-muted);
   line-height: 1.4;
   flex: 1;
 }
@@ -653,15 +697,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 0.72rem;
-  color: var(--harek-text-muted);
+  font-size: 0.7rem;
+  color: var(--text-dim);
 }
 
 .catalog-card-meta code {
-  color: var(--harek-text-secondary);
-  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-family: var(--font-code);
 }
 
 .catalog-card-actions {
-  margin-top: 6px;
+  margin-top: 4px;
 }

@@ -6,6 +6,7 @@ export interface WidgetContainerOptions {
   content: HTMLElement;
   bounds: WidgetBounds;
   onBoundsChange: (bounds: WidgetBounds) => void;
+  onToggleEnabled: () => void;
   onClose: () => void;
   onFocus: () => void;
 }
@@ -58,15 +59,25 @@ export class WidgetContainer {
     const controls = document.createElement('div');
     controls.className = 'harek-widget-controls';
 
+    const powerBtn = document.createElement('button');
+    powerBtn.className = 'harek-widget-btn harek-widget-power-btn';
+    powerBtn.title = 'Отключить плагин';
+    powerBtn.innerHTML = '&#9210;';
+    powerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.options.onToggleEnabled();
+    });
+
     const closeBtn = document.createElement('button');
     closeBtn.className = 'harek-widget-btn harek-widget-close-btn';
-    closeBtn.title = 'Закрыть и выгрузить виджет';
+    closeBtn.title = 'Удалить плагин';
     closeBtn.innerHTML = '&times;';
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.options.onClose();
     });
 
+    controls.appendChild(powerBtn);
     controls.appendChild(closeBtn);
     header.appendChild(titleGroup);
     header.appendChild(controls);

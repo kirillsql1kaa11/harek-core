@@ -67,7 +67,7 @@ export class Toolbar {
 
     const inspectorBtn = document.createElement('button');
     inspectorBtn.className = 'harek-btn harek-btn-secondary';
-    inspectorBtn.textContent = 'Инспектор ядра';
+    inspectorBtn.textContent = 'Модули и инспектор';
     inspectorBtn.addEventListener('click', () => this.onOpenInspector());
 
     const clearBtn = document.createElement('button');

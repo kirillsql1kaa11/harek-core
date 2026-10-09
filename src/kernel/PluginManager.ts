@@ -19,7 +19,8 @@ export interface LoadedPluginRecord {
   instance: HarekPlugin;
   container?: HTMLElement;
   bounds?: WidgetBounds;
-  unmounted?: boolean;
+  enabled: boolean;
+  codeOrFactory: string | (() => HarekPlugin);
 }
 
 export type WidgetMountHandler = (
@@ -30,11 +31,14 @@ export type WidgetMountHandler = (
   onClose: () => void
 ) => void;
 
+export type WidgetUnmountHandler = (pluginId: string) => void;
+
 export class PluginManager {
   private kernel: Kernel;
   private eventBus: EventBus;
   private plugins: Map<string, LoadedPluginRecord> = new Map();
   private mountHandler: WidgetMountHandler | null = null;
+  private unmountHandler: WidgetUnmountHandler | null = null;
 
   constructor(kernel: Kernel, eventBus: EventBus) {
     this.kernel = kernel;
@@ -43,6 +47,10 @@ export class PluginManager {
 
   setMountHandler(handler: WidgetMountHandler): void {
     this.mountHandler = handler;
+  }
+
+  setUnmountHandler(handler: WidgetUnmountHandler): void {
+    this.unmountHandler = handler;
   }
 
   async installFromZip(arrayBuffer: ArrayBuffer, position?: { x: number; y: number }): Promise<PluginManifest> {
@@ -102,8 +110,13 @@ export class PluginManager {
         throw new PluginLifecycleError(manifest.id, 'boot', new Error('Расширение ядра обязано реализовывать метод onKernelBoot'));
       }
       await extension.onKernelBoot(this.kernel);
-      this.plugins.set(manifest.id, { manifest, instance: pluginInstance });
-      pluginLogger.info(`Системное расширение ядра '${manifest.name}' успешно активировано`);
+      this.plugins.set(manifest.id, {
+        manifest,
+        instance: pluginInstance,
+        enabled: true,
+        codeOrFactory
+      });
+      pluginLogger.info(`Системное расширение ядра '${manifest.name}' активировано`);
     } else if (manifest.type === 'board-widget') {
       const widget = pluginInstance as IWidgetPlugin;
       if (typeof widget.render !== 'function') {
@@ -147,7 +160,9 @@ export class PluginManager {
         manifest,
         instance: pluginInstance,
         container,
-        bounds
+        bounds,
+        enabled: true,
+        codeOrFactory
       };
       this.plugins.set(manifest.id, record);
 
@@ -157,7 +172,7 @@ export class PluginManager {
         });
       }
 
-      pluginLogger.info(`Виджет '${manifest.name}' успешно смонтирован на доску`);
+      pluginLogger.info(`Виджет '${manifest.name}' смонтирован на доску`);
     }
 
     await this.kernel.hooks.get('afterPluginLoad').call(this.kernel, {
@@ -169,29 +184,117 @@ export class PluginManager {
     return manifest;
   }
 
-  async uninstallPlugin(pluginId: string): Promise<boolean> {
+  async disablePlugin(pluginId: string): Promise<boolean> {
     const record = this.plugins.get(pluginId);
-    if (!record) return false;
+    if (!record || !record.enabled) return false;
 
-    await this.kernel.hooks.get('beforePluginUnload').call(this.kernel, { pluginId });
-
-    if (record.manifest.type === 'core-extension') {
-      const ext = record.instance as ICoreExtension;
-      if (typeof ext.onKernelShutdown === 'function') {
-        await ext.onKernelShutdown();
-      }
-    } else if (record.manifest.type === 'board-widget') {
+    if (record.manifest.type === 'board-widget') {
       const widget = record.instance as IWidgetPlugin;
       if (typeof widget.onUnload === 'function') {
         await widget.onUnload();
       }
-      if (record.container && record.container.parentElement) {
-        record.container.parentElement.remove();
+      if (this.unmountHandler) {
+        this.unmountHandler(pluginId);
+      }
+    } else if (record.manifest.type === 'core-extension') {
+      const ext = record.instance as ICoreExtension;
+      if (typeof ext.onKernelShutdown === 'function') {
+        await ext.onKernelShutdown();
       }
     }
 
+    record.enabled = false;
+    this.eventBus.emit('plugin:state-changed', { pluginId, enabled: false, manifest: record.manifest });
+    this.kernel.logger.info(`Плагин '${record.manifest.name}' отключен`);
+    return true;
+  }
+
+  async enablePlugin(pluginId: string): Promise<boolean> {
+    const record = this.plugins.get(pluginId);
+    if (!record || record.enabled) return false;
+
+    let newInstance: HarekPlugin;
+    if (typeof record.codeOrFactory === 'function') {
+      newInstance = record.codeOrFactory();
+    } else {
+      newInstance = await this.instantiateCode(record.codeOrFactory);
+    }
+    record.instance = newInstance;
+
+    const pluginLogger = new Logger(`Plugin:${record.manifest.id}`, this.eventBus);
+    const pluginStorage = new PluginStorage(record.manifest.id);
+
+    if (record.manifest.type === 'board-widget') {
+      const widget = newInstance as IWidgetPlugin;
+      const bounds = record.bounds || { x: 100, y: 100, width: 320, height: 220 };
+      const container = document.createElement('div');
+      container.className = 'harek-widget-content';
+
+      const widgetContext: IWidgetContext = {
+        manifest: record.manifest,
+        widgetId: record.manifest.id,
+        events: this.eventBus,
+        storage: pluginStorage,
+        logger: pluginLogger,
+        getBounds: () => ({ ...bounds }),
+        setBounds: (newBounds: Partial<WidgetBounds>) => {
+          Object.assign(bounds, newBounds);
+          if (typeof widget.onResize === 'function') {
+            widget.onResize(bounds);
+          }
+        }
+      };
+
+      if (typeof widget.onLoad === 'function') {
+        await widget.onLoad(widgetContext);
+      }
+      widget.render(container);
+      record.container = container;
+
+      if (this.mountHandler) {
+        this.mountHandler(record.manifest.id, record.manifest, container, bounds, () => {
+          this.uninstallPlugin(record.manifest.id);
+        });
+      }
+    } else if (record.manifest.type === 'core-extension') {
+      const ext = newInstance as ICoreExtension;
+      if (typeof ext.onKernelBoot === 'function') {
+        await ext.onKernelBoot(this.kernel);
+      }
+    }
+
+    record.enabled = true;
+    this.eventBus.emit('plugin:state-changed', { pluginId, enabled: true, manifest: record.manifest });
+    this.kernel.logger.info(`Плагин '${record.manifest.name}' включен`);
+    return true;
+  }
+
+  async togglePlugin(pluginId: string): Promise<boolean> {
+    const record = this.plugins.get(pluginId);
+    if (!record) return false;
+    if (record.enabled) {
+      return !(await this.disablePlugin(pluginId));
+    } else {
+      return await this.enablePlugin(pluginId);
+    }
+  }
+
+  isPluginEnabled(pluginId: string): boolean {
+    return this.plugins.get(pluginId)?.enabled ?? false;
+  }
+
+  async uninstallPlugin(pluginId: string): Promise<boolean> {
+    const record = this.plugins.get(pluginId);
+    if (!record) return false;
+
+    if (record.enabled) {
+      await this.disablePlugin(pluginId);
+    }
+
+    await this.kernel.hooks.get('beforePluginUnload').call(this.kernel, { pluginId });
     this.plugins.delete(pluginId);
     this.eventBus.emit('plugin:uninstalled', { pluginId, manifest: record.manifest });
+    this.kernel.logger.info(`Плагин '${record.manifest.name}' полностью удален из ядра`);
     return true;
   }
 

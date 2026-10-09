@@ -14,6 +14,10 @@ export class BoardCanvas {
     this.element.appendChild(this.dropOverlay);
     this.bindDropEvents();
     this.bindSlotIntegration();
+
+    this.kernel.plugins.setUnmountHandler((pluginId) => {
+      this.removeWidget(pluginId);
+    });
   }
 
   private createDOM(): HTMLElement {
@@ -97,6 +101,9 @@ export class BoardCanvas {
         if (record) {
           record.bounds = newBounds;
         }
+      },
+      onToggleEnabled: async () => {
+        await this.kernel.plugins.disablePlugin(id);
       },
       onClose: () => {
         onClose();
