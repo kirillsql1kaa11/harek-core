@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:exe": "tsc && vite build && dotnet publish ./launcher/launcher.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o .",
+    "start": ".\\HarekCore.exe"
   },
   "dependencies": {
     "harek-sdk": "file:../harek",

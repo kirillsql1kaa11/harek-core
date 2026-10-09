@@ -1,5 +1,10 @@
 node_modules/
 dist/
+app/
+launcher/bin/
+launcher/obj/
+*.pdb
+*.xml
 *.log
 .DS_Store
 .vscode/
