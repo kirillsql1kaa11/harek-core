@@ -1,0 +1,21 @@
+{
+  "name": "harek-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "harek-sdk": "file:../harek",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "@types/node": "^22.13.0",
+    "@types/jszip": "^3.4.1"
+  }
+}
